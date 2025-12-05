@@ -1,8 +1,47 @@
 @import "tailwindcss";
 
 /* Custom styles for the application */
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  font-family: 'Raleway', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+/* Global Heading Styles */
+h1, h2, h3, h4, h5, h6 {
+  background: linear-gradient(135deg, #111827 0%, #1e3a8a 50%, #312e81 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important;
+}
+
+/* Navbar Background */
+.navbar-bg {
+  background: linear-gradient(135deg, #111827 0%, #1e3a8a 50%, #312e81 100%) !important;
+}
+
+/* Button Background */
+.btn-gradient {
+  background: linear-gradient(135deg, #111827 0%, #1e3a8a 50%, #312e81 100%) !important;
+}
+
+/* Icon Gradient */
+.icon-gradient {
+  background: linear-gradient(135deg, #111827 0%, #1e3a8a 50%, #312e81 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important;
+}
+
+/* Footer White Text */
+.footer-white {
+  color: white !important;
+  background: none !important;
+  -webkit-text-fill-color: white !important;
 }
 
 /* Smooth transitions for interactive elements */

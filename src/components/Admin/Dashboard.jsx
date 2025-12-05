@@ -110,21 +110,21 @@ const AdminDashboard = () => {
             </div>
             <div className="p-6">
               <div className="space-y-4">
-                {dashboardData?.recentStudents?.map((student) => (
-                  <div key={student.id} className="flex items-center justify-between">
+                {dashboardData?.recentStudents?.map((student, index) => (
+                  <div key={student.id || student._id || index} className="flex items-center justify-between">
                     <div>
                       <p className="font-medium text-gray-900">
                         {student.firstName} {student.lastName}
                       </p>
                       <p className="text-sm text-gray-500">
-                        Last attendance: {new Date(student.lastAttendance).toLocaleDateString()}
+                        Last attendance: {student.lastAttendance ? new Date(student.lastAttendance).toLocaleDateString() : 'Never'}
                       </p>
                     </div>
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                       Active
                     </span>
                   </div>
-                ))}
+                )) || []}
               </div>
               <div className="mt-6">
                 <a

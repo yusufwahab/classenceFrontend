@@ -159,53 +159,62 @@ const Register = () => {
   const passwordStrength = getPasswordStrength(currentForm.password);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex flex-col justify-center py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <Link to="/" className="flex justify-center">
-          <span className="text-3xl font-bold text-blue-700">Classence</span>
+        <Link to="/" className="flex justify-center mb-8">
+          <span className="text-4xl font-bold" style={{background: 'linear-gradient(135deg, #111827 0%, #1e3a8a 50%, #312e81 100%)', WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent'}}>
+            Classence
+          </span>
         </Link>
-        <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
-          Create your account
-        </h2>
+        <div className="text-center">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">
+            Join Classence
+          </h2>
+          <p className="text-base text-gray-600">
+            Create your account to get started
+          </p>
+        </div>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow-lg sm:rounded-lg sm:px-10">
-          {/* Tabs */}
-          <div className="flex mb-6">
+        <div className="bg-white/80 backdrop-blur-sm py-8 px-6 shadow-2xl rounded-2xl border border-blue-100 sm:px-10">
+          {/* Premium Tabs */}
+          <div className="flex mb-8 bg-gray-100 rounded-xl p-1">
             <button
               onClick={() => setActiveTab('student')}
-              className={`flex-1 py-2 px-4 text-sm font-medium rounded-l-lg border ${
+              className={`flex-1 py-3 px-4 text-sm font-semibold rounded-lg transition-all duration-200 ${
                 activeTab === 'student'
-                  ? 'bg-blue-700 text-white border-blue-700'
-                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                  ? 'btn-gradient text-white shadow-lg transform scale-105'
+                  : 'text-gray-600 hover:text-blue-600 hover:bg-white/50'
               }`}
             >
-              Student Registration
+              Student
             </button>
             <button
               onClick={() => setActiveTab('admin')}
-              className={`flex-1 py-2 px-4 text-sm font-medium rounded-r-lg border-t border-r border-b ${
+              className={`flex-1 py-3 px-4 text-sm font-semibold rounded-lg transition-all duration-200 ${
                 activeTab === 'admin'
-                  ? 'bg-blue-700 text-white border-blue-700'
-                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                  ? 'btn-gradient text-white shadow-lg transform scale-105'
+                  : 'text-gray-600 hover:text-blue-600 hover:bg-white/50'
               }`}
             >
-              Admin Registration
+              Admin
             </button>
           </div>
 
           {/* Message */}
           {message.text && (
-            <div className={`mb-4 p-3 rounded-md flex items-center space-x-2 ${
-              message.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
+            <div className={`mb-6 p-4 rounded-xl flex items-center space-x-3 ${
+              message.type === 'success' 
+                ? 'bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 border border-green-200' 
+                : 'bg-gradient-to-r from-red-50 to-pink-50 text-red-700 border border-red-200'
             }`}>
               {message.type === 'success' ? (
-                <CheckCircle className="h-5 w-5" />
+                <CheckCircle className="h-5 w-5 flex-shrink-0" />
               ) : (
-                <XCircle className="h-5 w-5" />
+                <XCircle className="h-5 w-5 flex-shrink-0" />
               )}
-              <span className="text-sm">{message.text}</span>
+              <span className="text-sm font-medium">{message.text}</span>
             </div>
           )}
 
@@ -214,7 +223,7 @@ const Register = () => {
             <form onSubmit={handleStudentSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
                     First Name
                   </label>
                   <input
@@ -222,11 +231,11 @@ const Register = () => {
                     required
                     value={studentForm.firstName}
                     onChange={(e) => setStudentForm({...studentForm, firstName: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200 bg-white/90 backdrop-blur-sm hover:border-blue-300"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Last Name
                   </label>
                   <input
@@ -234,13 +243,13 @@ const Register = () => {
                     required
                     value={studentForm.lastName}
                     onChange={(e) => setStudentForm({...studentForm, lastName: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200 bg-white/90 backdrop-blur-sm hover:border-blue-300"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Email
                 </label>
                 <input
@@ -248,7 +257,7 @@ const Register = () => {
                   required
                   value={studentForm.email}
                   onChange={(e) => setStudentForm({...studentForm, email: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200 bg-white/90 backdrop-blur-sm hover:border-blue-300"
                 />
               </div>
 
@@ -267,14 +276,14 @@ const Register = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Department
                 </label>
                 <select
                   required
                   value={studentForm.departmentId}
                   onChange={(e) => setStudentForm({...studentForm, departmentId: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200 bg-white/90 backdrop-blur-sm hover:border-blue-300"
                 >
                   <option value="">Select Department</option>
                   {departments.map(dept => (
@@ -335,9 +344,16 @@ const Register = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full flex justify-center py-4 px-6 border border-transparent rounded-xl shadow-lg text-base font-semibold text-white btn-gradient hover:opacity-90 focus:outline-none focus:ring-4 focus:ring-blue-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-105 active:scale-95"
               >
-                {loading ? 'Registering...' : 'Register as Student'}
+                {loading ? (
+                  <div className="flex items-center space-x-2">
+                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
+                    <span>Creating Account...</span>
+                  </div>
+                ) : (
+                  'Create Student Account'
+                )}
               </button>
             </form>
           )}
@@ -405,9 +421,15 @@ const Register = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="">Select Department</option>
-                  {departments.map(dept => (
-                    <option key={dept.id} value={dept.name}>{dept.name}</option>
-                  ))}
+                  <option value="Biomedical Engineering">Biomedical Engineering</option>
+                  <option value="Chemical Engineering">Chemical Engineering</option>
+                  <option value="Petroleum & Gas Engineering">Petroleum & Gas Engineering</option>
+                  <option value="Civil & Environmental Engineering">Civil & Environmental Engineering</option>
+                  <option value="Electrical & Electronics Engineering">Electrical & Electronics Engineering</option>
+                  <option value="Mechanical Engineering">Mechanical Engineering</option>
+                  <option value="Metallurgical & Materials Engineering">Metallurgical & Materials Engineering</option>
+                  <option value="Surveying & Geoinformatics">Surveying & Geoinformatics</option>
+                  <option value="Systems Engineering">Systems Engineering</option>
                 </select>
               </div>
 
@@ -484,13 +506,23 @@ const Register = () => {
             </form>
           )}
 
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
-              Already have an account?{' '}
-              <Link to="/login" className="font-medium text-blue-700 hover:text-blue-600">
+          <div className="mt-8 text-center">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-200" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-4 bg-white text-gray-500 font-medium">Already have an account?</span>
+              </div>
+            </div>
+            <div className="mt-6">
+              <Link 
+                to="/login" 
+                className="inline-flex items-center px-6 py-3 border-2 border-blue-200 rounded-xl text-base font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 hover:border-blue-300 transition-all duration-200 transform hover:scale-105"
+              >
                 Sign in here
               </Link>
-            </p>
+            </div>
           </div>
         </div>
       </div>

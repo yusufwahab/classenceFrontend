@@ -78,7 +78,7 @@ const StudentDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
       <Navbar />
       
       <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
@@ -96,47 +96,47 @@ const StudentDashboard = () => {
           </div>
         )}
 
-        {/* Welcome Card */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+        {/* Premium Welcome Card */}
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-blue-100 p-6 sm:p-8 mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">
+            <div className="space-y-2">
+              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
                 Welcome back, {user?.firstName}!
               </h1>
-              <p className="text-gray-600 mt-1">
+              <p className="text-lg text-gray-700 font-medium">
                 {user?.departmentName} Department
               </p>
-              <p className="text-sm text-gray-500 mt-1">
-                Matric Number: {user?.matricNumber}
+              <p className="text-sm text-gray-600 bg-blue-50 px-3 py-1 rounded-full inline-block">
+                Matric: {user?.matricNumber}
               </p>
             </div>
-            <div className="mt-4 sm:mt-0">
-              <div className="flex items-center space-x-2 text-sm text-gray-500">
-                <Calendar className="h-4 w-4" />
-                <span>{formatDate(new Date())}</span>
+            <div className="mt-6 sm:mt-0">
+              <div className="flex items-center space-x-3 text-sm text-gray-600 bg-gradient-to-r from-blue-50 to-indigo-50 px-4 py-3 rounded-xl border border-blue-200">
+                <Calendar className="h-5 w-5 text-blue-600" />
+                <span className="font-medium">{formatDate(new Date())}</span>
               </div>
             </div>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Attendance Status Card */}
+          {/* Premium Attendance Status Card */}
           <div className="lg:col-span-2">
-            <div className={`bg-white rounded-lg shadow-sm border p-6 ${
+            <div className={`bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border-2 p-6 sm:p-8 transition-all duration-300 ${
               dashboardData?.todayAttendance?.marked 
-                ? 'border-green-200 bg-green-50' 
-                : 'border-yellow-200 bg-yellow-50'
+                ? 'border-green-200 bg-gradient-to-br from-green-50 to-emerald-50' 
+                : 'border-amber-200 bg-gradient-to-br from-amber-50 to-yellow-50'
             }`}>
               <div className="flex items-start space-x-4">
-                <div className={`p-3 rounded-full ${
+                <div className={`p-4 rounded-2xl shadow-lg ${
                   dashboardData?.todayAttendance?.marked 
-                    ? 'bg-green-100' 
-                    : 'bg-yellow-100'
+                    ? 'bg-gradient-to-br from-green-100 to-emerald-100' 
+                    : 'bg-gradient-to-br from-amber-100 to-yellow-100'
                 }`}>
                   {dashboardData?.todayAttendance?.marked ? (
-                    <CheckCircle className="h-8 w-8 text-green-600" />
+                    <CheckCircle className="h-10 w-10 text-green-600" />
                   ) : (
-                    <AlertTriangle className="h-8 w-8 text-yellow-600" />
+                    <AlertTriangle className="h-10 w-10 text-amber-600" />
                   )}
                 </div>
                 
@@ -163,7 +163,7 @@ const StudentDashboard = () => {
                       <button
                         onClick={handleMarkAttendance}
                         disabled={markingAttendance}
-                        className="bg-blue-700 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-4 rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-lg"
                       >
                         {markingAttendance ? (
                           <div className="flex items-center space-x-2">
@@ -181,30 +181,30 @@ const StudentDashboard = () => {
             </div>
           </div>
 
-          {/* Quick Stats */}
-          <div className="space-y-4">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <CheckCircle className="h-6 w-6 text-blue-600" />
+          {/* Premium Quick Stats */}
+          <div className="space-y-6">
+            <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-blue-100 p-6 hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
+              <div className="flex items-center space-x-4">
+                <div className="p-3 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl shadow-lg">
+                  <CheckCircle className="h-8 w-8 text-blue-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">This Month</p>
-                  <p className="text-xl font-semibold text-gray-900">
+                  <p className="text-sm font-semibold text-gray-600">This Month</p>
+                  <p className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
                     {dashboardData?.monthlyAttendance || 0} days
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-green-100 rounded-lg">
-                  <Calendar className="h-6 w-6 text-green-600" />
+            <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-green-100 p-6 hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
+              <div className="flex items-center space-x-4">
+                <div className="p-3 bg-gradient-to-br from-green-100 to-emerald-200 rounded-2xl shadow-lg">
+                  <Calendar className="h-8 w-8 text-green-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Total Attendance</p>
-                  <p className="text-xl font-semibold text-gray-900">
+                  <p className="text-sm font-semibold text-gray-600">Total Attendance</p>
+                  <p className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
                     {dashboardData?.totalAttendance || 0} days
                   </p>
                 </div>

@@ -142,8 +142,8 @@ const AdminAttendanceView = () => {
           
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 flex items-center space-x-3">
-                <Users className="h-8 w-8 text-blue-600" />
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 flex items-center space-x-3">
+                <Users className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600" />
                 <span>Attendance Records</span>
               </h1>
               <p className="text-gray-600 mt-2">
@@ -283,13 +283,26 @@ const AdminAttendanceView = () => {
                         <div className="flex items-center justify-between">
                           <span className="text-sm text-gray-600">Signature:</span>
                           <button
-                            onClick={() => viewSignature(record.signature)}
+                            onClick={() => viewSignature(record.signatureImage || record.signature)}
                             className="flex items-center space-x-2 text-blue-600"
                           >
                             <img
-                              src={record.signature}
+                              src={record.signatureImage || record.signature}
                               alt="Signature"
-                              className="h-6 w-12 object-contain border border-gray-200 rounded"
+                              style={{
+                                maxWidth: '60px',
+                                height: '30px',
+                                border: '1px solid #ccc',
+                                objectFit: 'contain'
+                              }}
+                              onError={(e) => {
+                                console.log('Mobile signature load error for record:', record);
+                                console.log('Mobile signature data:', record.signatureImage || record.signature);
+                                e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCA2NCAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjMyIiBmaWxsPSIjRjNGNEY2Ii8+Cjx0ZXh0IHg9IjMyIiB5PSIxOCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEwIiBmaWxsPSIjOUI5QjlCIj5ObyBTaWduYXR1cmU8L3RleHQ+Cjwvc3ZnPgo=';
+                              }}
+                              onLoad={() => {
+                                console.log('Mobile signature loaded successfully for:', record.name);
+                              }}
                             />
                             <Eye className="h-4 w-4" />
                           </button>
