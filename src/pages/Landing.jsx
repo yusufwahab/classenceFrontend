@@ -183,7 +183,7 @@ const Landing = () => {
             <div className="flex justify-center lg:justify-end">
               <div className="relative">
                 <img 
-                  src="/src/assets/StudentAtdImg.png" 
+                  src="/StudentAtdImg.png" 
                   alt="Student Attendance Management" 
                   className="w-full max-w-lg h-auto rounded-2xl shadow-2xl transform hover:scale-105 transition-all duration-300"
                 />
