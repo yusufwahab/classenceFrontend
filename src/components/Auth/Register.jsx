@@ -36,6 +36,7 @@ const Register = () => {
 
   const [studentForm, setStudentForm] = useState({
     firstName: '',
+    middleName: '',
     lastName: '',
     email: '',
     matricNumber: '',
@@ -46,6 +47,7 @@ const Register = () => {
 
   const [adminForm, setAdminForm] = useState({
     firstName: '',
+    middleName: '',
     lastName: '',
     email: '',
     departmentName: '',
@@ -81,6 +83,7 @@ const Register = () => {
     try {
       const payload = {
         firstName: studentForm.firstName,
+        middleName: studentForm.middleName,
         lastName: studentForm.lastName,
         email: studentForm.email,
         matricNumber: studentForm.matricNumber,
@@ -129,6 +132,7 @@ const Register = () => {
     try {
       const payload = {
         firstName: adminForm.firstName,
+        middleName: adminForm.middleName,
         lastName: adminForm.lastName,
         email: adminForm.email,
         password: adminForm.password,
@@ -221,31 +225,42 @@ const Register = () => {
           {/* Student Registration Form */}
           {activeTab === 'student' && (
             <form onSubmit={handleStudentSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    First Name
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={studentForm.firstName}
-                    onChange={(e) => setStudentForm({...studentForm, firstName: e.target.value})}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200 bg-white/90 backdrop-blur-sm hover:border-blue-300"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Last Name
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={studentForm.lastName}
-                    onChange={(e) => setStudentForm({...studentForm, lastName: e.target.value})}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200 bg-white/90 backdrop-blur-sm hover:border-blue-300"
-                  />
-                </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  First Name
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={studentForm.firstName}
+                  onChange={(e) => setStudentForm({...studentForm, firstName: e.target.value})}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200 bg-white/90 backdrop-blur-sm hover:border-blue-300"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Middle Name <span className="text-gray-500 text-xs">(Optional)</span>
+                </label>
+                <input
+                  type="text"
+                  value={studentForm.middleName}
+                  onChange={(e) => setStudentForm({...studentForm, middleName: e.target.value})}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200 bg-white/90 backdrop-blur-sm hover:border-blue-300"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Last Name
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={studentForm.lastName}
+                  onChange={(e) => setStudentForm({...studentForm, lastName: e.target.value})}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200 bg-white/90 backdrop-blur-sm hover:border-blue-300"
+                />
               </div>
 
               <div>
@@ -370,31 +385,42 @@ const Register = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    First Name
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={adminForm.firstName}
-                    onChange={(e) => setAdminForm({...adminForm, firstName: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Last Name
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={adminForm.lastName}
-                    onChange={(e) => setAdminForm({...adminForm, lastName: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  First Name
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={adminForm.firstName}
+                  onChange={(e) => setAdminForm({...adminForm, firstName: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Middle Name <span className="text-gray-500 text-xs">(Optional)</span>
+                </label>
+                <input
+                  type="text"
+                  value={adminForm.middleName}
+                  onChange={(e) => setAdminForm({...adminForm, middleName: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Last Name
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={adminForm.lastName}
+                  onChange={(e) => setAdminForm({...adminForm, lastName: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
               </div>
 
               <div>
