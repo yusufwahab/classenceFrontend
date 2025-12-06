@@ -386,9 +386,10 @@ const Register = () => {
               <div className="bg-blue-50 border border-blue-200 rounded-md p-3 mb-4">
                 <div className="flex items-start space-x-2">
                   <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5" />
-                  <p className="text-sm text-blue-700">
-                    Creating a department requires an admin code. Contact your system administrator.
-                  </p>
+                  <div className="text-sm text-blue-700">
+                    <p className="font-medium mb-1">Admin Registration Required</p>
+                    <p>To create an admin account and register your department, please contact the system creator at <strong>yabvil25@gmail.com</strong> or <strong>07012507986</strong> to obtain your admin authorization code.</p>
+                  </div>
                 </div>
               </div>
 
