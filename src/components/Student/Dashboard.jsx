@@ -104,10 +104,10 @@ const StudentDashboard = () => {
                 Welcome back, {user?.firstName}!
               </h1>
               <p className="text-lg text-gray-700 font-medium">
-                {user?.departmentName} Department
+                {dashboardData?.user?.departmentName || user?.departmentName} Department
               </p>
               <p className="text-sm text-gray-600 bg-blue-50 px-3 py-1 rounded-full inline-block">
-                Matric: {user?.matricNumber}
+                Matric: {dashboardData?.user?.matricNumber || user?.matricNumber || 'Loading...'}
               </p>
             </div>
             <div className="mt-6 sm:mt-0">
