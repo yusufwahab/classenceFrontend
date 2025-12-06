@@ -294,6 +294,13 @@ const Register = () => {
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Department
                 </label>
+                {departments.length === 0 && (
+                  <div className="mb-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                    <p className="text-sm text-amber-700">
+                      <strong>Note:</strong> No departments available. An Admin (Course Rep) must register for the department first before students can select it.
+                    </p>
+                  </div>
+                )}
                 <select
                   required
                   value={studentForm.departmentId}
