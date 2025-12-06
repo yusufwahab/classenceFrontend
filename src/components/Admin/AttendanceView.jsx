@@ -8,9 +8,11 @@ import jsPDF from 'jspdf';
 const AdminAttendanceView = () => {
   const { user } = useAuth();
   const [attendanceRecords, setAttendanceRecords] = useState([]);
+  const [subjectAttendance, setSubjectAttendance] = useState({});
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [selectedSignature, setSelectedSignature] = useState(null);
+  const [activeTab, setActiveTab] = useState('general');
 
   useEffect(() => {
     fetchAttendanceRecords();
@@ -18,24 +20,90 @@ const AdminAttendanceView = () => {
 
   const fetchAttendanceRecords = async () => {
     try {
-      const response = await adminAPI.getTodayAttendance();
-      console.log('Attendance response:', response.data);
-      const records = response.data.attendanceRecords || response.data.attendance || [];
-      console.log('Attendance records:', records);
-      setAttendanceRecords(records);
+      console.log('Admin fetching attendance from:', '/admin/attendance/today');
+      console.log('Admin user:', user);
+      console.log('Selected date:', selectedDate);
+      const response = await adminAPI.getTodayAttendance(selectedDate);
+      console.log('Raw attendance response:', response.data);
+      console.log('Response status:', response.status);
+      console.log('Number of sessions returned:', response.data.length);
+      response.data.forEach((session, index) => {
+        console.log(`Session ${index + 1}:`, {
+          sessionId: session.sessionId,
+          subjectName: session.subjectName,
+          attendanceCount: session.attendanceCount,
+          recordsLength: session.attendanceRecords?.length || 0,
+          records: session.attendanceRecords
+        });
+      });
+      
+      // Flatten attendance records from all sessions
+      const allRecords = [];
+      const groupedBySubject = {};
+      
+      response.data.forEach(session => {
+        const sessionRecords = session.attendanceRecords || [];
+        sessionRecords.forEach(record => {
+          // Add subject info to each record
+          const enrichedRecord = {
+            ...record,
+            subjectName: session.subjectName,
+            subjectCode: session.subjectCode,
+            sessionId: session.sessionId
+          };
+          allRecords.push(enrichedRecord);
+          
+          // Group by subject
+          const subject = session.subjectName;
+          if (!groupedBySubject[subject]) {
+            groupedBySubject[subject] = [];
+          }
+          groupedBySubject[subject].push(enrichedRecord);
+        });
+      });
+      
+      console.log('Flattened attendance records:', allRecords);
+      
+      // Debug name fields for each record
+      allRecords.forEach((record, index) => {
+        console.log(`Record ${index + 1} name fields:`, {
+          studentName: record.studentName,
+          name: record.name,
+          firstName: record.firstName,
+          middleName: record.middleName,
+          lastName: record.lastName,
+          allFields: Object.keys(record)
+        });
+      });
+      setAttendanceRecords(allRecords);
+      
+      setSubjectAttendance(groupedBySubject);
     } catch (error) {
-      console.error('Failed to fetch attendance records:', error);
+      if (error.response?.status === 404) {
+        console.log('Attendance endpoint not implemented yet');
+        setAttendanceRecords([]);
+        setSubjectAttendance({});
+      } else {
+        console.error('Failed to fetch attendance records:', error);
+      }
     } finally {
       setLoading(false);
     }
   };
 
   const formatTime = (timeString) => {
-    return new Date(`2000-01-01 ${timeString}`).toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
-    });
+    if (!timeString) return 'N/A';
+    try {
+      // Handle ISO date string or time string
+      const date = timeString.includes('T') ? new Date(timeString) : new Date(`2000-01-01 ${timeString}`);
+      return date.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      });
+    } catch (error) {
+      return timeString;
+    }
   };
 
   const handleExportPDF = async () => {
@@ -56,16 +124,23 @@ const AdminAttendanceView = () => {
     doc.setFont('helvetica', 'bold');
     doc.text('Attendance Record Sheet', 105, 20, { align: 'center' });
     
+    // Subject (center, below title)
+    const currentRecords = activeTab === 'general' ? attendanceRecords : (subjectAttendance[activeTab] || []);
+    const subjectName = activeTab !== 'general' ? activeTab : 'All Subjects';
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Subject: ${subjectName}`, 105, 35, { align: 'center' });
+    
     // Department (left side)
     doc.setFontSize(12);
     doc.setFont('helvetica', 'normal');
-    doc.text(`Department: ${departmentName}`, 20, 40);
+    doc.text(`Department: ${departmentName}`, 20, 50);
     
     // Date (right side)
-    doc.text(`Date: ${currentDate}`, 150, 40);
+    doc.text(`Date: ${currentDate}`, 150, 50);
     
     // Table headers
-    const startY = 60;
+    const startY = 70;
     const rowHeight = 20;
     
     doc.setFontSize(10);
@@ -83,8 +158,10 @@ const AdminAttendanceView = () => {
     // Table data with signatures
     doc.setFont('helvetica', 'normal');
     
-    for (let index = 0; index < attendanceRecords.length; index++) {
-      const record = attendanceRecords[index];
+    const recordsToExport = activeTab === 'general' ? attendanceRecords : (subjectAttendance[activeTab] || []);
+    
+    for (let index = 0; index < recordsToExport.length; index++) {
+      const record = recordsToExport[index];
       const yPos = startY + 10 + (index * rowHeight);
       
       doc.text((index + 1).toString(), 20, yPos);
@@ -105,17 +182,17 @@ const AdminAttendanceView = () => {
       }
       
       // Draw row separator line
-      if (index < attendanceRecords.length - 1) {
+      if (index < recordsToExport.length - 1) {
         doc.line(15, yPos + 8, 195, yPos + 8);
       }
     }
     
     // Final bottom line
-    const finalY = startY + 10 + (attendanceRecords.length * rowHeight);
+    const finalY = startY + 10 + (recordsToExport.length * rowHeight);
     doc.line(15, finalY, 195, finalY);
     
     // Save the PDF
-    const fileName = `Attendance_Record_${new Date().toISOString().split('T')[0]}.pdf`;
+    const fileName = `${subjectName.replace(/\s+/g, '_')}_Attendance_${new Date().toISOString().split('T')[0]}.pdf`;
     doc.save(fileName);
   };
 
@@ -183,13 +260,48 @@ const AdminAttendanceView = () => {
           </div>
         </div>
 
+        {/* Subject Tabs */}
+        {Object.keys(subjectAttendance).length > 1 && (
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
+            <div className="border-b border-gray-200">
+              <nav className="flex space-x-8 px-6" aria-label="Tabs">
+                <button
+                  onClick={() => setActiveTab('general')}
+                  className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === 'general'
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  All Attendance ({attendanceRecords.length})
+                </button>
+                {Object.keys(subjectAttendance).map((subject) => (
+                  <button
+                    key={subject}
+                    onClick={() => setActiveTab(subject)}
+                    className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                      activeTab === subject
+                        ? 'border-blue-500 text-blue-600'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    }`}
+                  >
+                    {subject} ({subjectAttendance[subject].length})
+                  </button>
+                ))}
+              </nav>
+            </div>
+          </div>
+        )}
+
         {/* Attendance Table */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
           {loading ? (
             <div className="flex items-center justify-center h-64">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700"></div>
             </div>
-          ) : attendanceRecords.length > 0 ? (
+          ) : (() => {
+            const currentRecords = activeTab === 'general' ? attendanceRecords : (subjectAttendance[activeTab] || []);
+            return currentRecords.length > 0 ? (
             <>
               {/* Desktop Table */}
               <div className="hidden md:block overflow-x-auto">
@@ -217,13 +329,18 @@ const AdminAttendanceView = () => {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {attendanceRecords.map((record, index) => (
-                      <tr key={record.studentId} className="hover:bg-gray-50">
+                    {(() => {
+                      const currentRecords = activeTab === 'general' ? attendanceRecords : (subjectAttendance[activeTab] || []);
+                      return currentRecords.map((record, index) => (
+                      <tr key={record.id || record.studentId || index} className="hover:bg-gray-50">
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                           {index + 1}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm font-medium text-gray-900">{record.name}</div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {record.studentName || record.name || 
+                             `${record.firstName || ''} ${record.middleName || ''} ${record.lastName || ''}`.trim().replace(/\s+/g, ' ')}
+                          </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                           {record.matricNumber}
@@ -233,24 +350,31 @@ const AdminAttendanceView = () => {
                             onClick={() => viewSignature(record.signatureImage || record.signature)}
                             className="flex items-center space-x-2 text-blue-600 hover:text-blue-800"
                           >
-                            <img
-                              src={record.signatureImage || record.signature}
-                              alt="Signature"
-                              style={{
-                                maxWidth: '100px',
-                                height: '50px',
-                                border: '1px solid #ccc',
-                                objectFit: 'contain'
-                              }}
-                              onError={(e) => {
-                                console.log('Signature load error for record:', record);
-                                console.log('Signature data:', record.signatureImage || record.signature);
-                                e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCA2NCAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjMyIiBmaWxsPSIjRjNGNEY2Ii8+Cjx0ZXh0IHg9IjMyIiB5PSIxOCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEwIiBmaWxsPSIjOUI5QjlCIj5ObyBTaWduYXR1cmU8L3RleHQ+Cjwvc3ZnPgo=';
-                              }}
-                              onLoad={() => {
-                                console.log('Signature loaded successfully for:', record.name);
-                              }}
-                            />
+                            {(record.signatureImage || record.signature) ? (
+                              <img
+                                src={record.signatureImage || record.signature}
+                                alt="Signature"
+                                style={{
+                                  maxWidth: '100px',
+                                  height: '50px',
+                                  border: '1px solid #ccc',
+                                  objectFit: 'contain'
+                                }}
+                                onError={(e) => {
+                                  console.log('Signature load error for record:', record);
+                                  console.log('Signature data:', record.signatureImage || record.signature);
+                                  console.log('Signature length:', (record.signatureImage || record.signature)?.length);
+                                  e.target.style.display = 'none';
+                                }}
+                                onLoad={() => {
+                                  console.log('Signature loaded successfully for:', record.studentName || record.name);
+                                }}
+                              />
+                            ) : (
+                              <span className="text-gray-500 text-sm">
+                                No Signature
+                              </span>
+                            )}
                             <Eye className="h-4 w-4" />
                           </button>
                         </td>
@@ -258,10 +382,11 @@ const AdminAttendanceView = () => {
                           {formatTime(record.timeIn)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {new Date(record.date).toLocaleDateString()}
+                          {record.date ? new Date(record.date).toLocaleDateString() : new Date().toLocaleDateString()}
                         </td>
                       </tr>
-                    ))}
+                      ));
+                    })()}
                   </tbody>
                 </table>
               </div>
@@ -269,15 +394,20 @@ const AdminAttendanceView = () => {
               {/* Mobile Cards */}
               <div className="md:hidden">
                 <div className="p-4 space-y-4">
-                  {attendanceRecords.map((record, index) => (
-                    <div key={record.studentId} className="border border-gray-200 rounded-lg p-4">
+                  {(() => {
+                    const currentRecords = activeTab === 'general' ? attendanceRecords : (subjectAttendance[activeTab] || []);
+                    return currentRecords.map((record, index) => (
+                    <div key={record.id || record.studentId || index} className="border border-gray-200 rounded-lg p-4">
                       <div className="flex items-center justify-between mb-3">
                         <span className="text-sm font-medium text-gray-900">#{index + 1}</span>
                         <span className="text-sm text-gray-500">{formatTime(record.timeIn)}</span>
                       </div>
                       <div className="space-y-2">
                         <div>
-                          <p className="text-sm font-medium text-gray-900">{record.name}</p>
+                          <p className="text-sm font-medium text-gray-900">
+                            {record.studentName || record.name || 
+                             `${record.firstName || ''} ${record.middleName || ''} ${record.lastName || ''}`.trim().replace(/\s+/g, ' ')}
+                          </p>
                           <p className="text-sm text-gray-500">{record.matricNumber}</p>
                         </div>
                         <div className="flex items-center justify-between">
@@ -309,21 +439,26 @@ const AdminAttendanceView = () => {
                         </div>
                       </div>
                     </div>
-                  ))}
+                    ));
+                  })()}
                 </div>
               </div>
             </>
-          ) : (
-            <div className="text-center py-12">
-              <Users className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                No attendance records for this date
-              </h3>
-              <p className="text-gray-500">
-                Students haven't marked attendance for {new Date(selectedDate).toLocaleDateString()} yet.
-              </p>
-            </div>
-          )}
+            ) : (
+              <div className="text-center py-12">
+                <Users className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  No attendance records for {activeTab === 'general' ? 'this date' : activeTab}
+                </h3>
+                <p className="text-gray-500">
+                  {activeTab === 'general' 
+                    ? `Students haven't marked attendance for ${new Date(selectedDate).toLocaleDateString()} yet.`
+                    : `No students have marked attendance for ${activeTab} yet.`
+                  }
+                </p>
+              </div>
+            );
+          })()}
         </div>
 
         {/* Signature Modal */}

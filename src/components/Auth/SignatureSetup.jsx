@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Upload, RotateCcw, CheckCircle, AlertCircle } from 'lucide-react';
 import SignatureCanvas from 'react-signature-canvas';
@@ -17,8 +17,14 @@ const SignatureSetup = () => {
   // Get pending user ID
   const pendingUserId = localStorage.getItem('pendingUserId');
 
+  // Use useEffect to handle navigation
+  React.useEffect(() => {
+    if (!pendingUserId) {
+      navigate('/register');
+    }
+  }, [pendingUserId, navigate]);
+
   if (!pendingUserId) {
-    navigate('/register');
     return null;
   }
 

@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react';
 import { Calendar, Clock, CheckCircle, Filter } from 'lucide-react';
 
 import Navbar from '../Shared/Navbar';
+import { studentAPI } from '../../services/api';
 
 const AttendanceLog = () => {
   const [attendanceData, setAttendanceData] = useState([]);
+  const [stats, setStats] = useState({ totalPresent: 0, thisMonth: 0, averageTime: 'N/A' });
   const [loading, setLoading] = useState(true);
   const [filterMonth, setFilterMonth] = useState('');
 
@@ -13,22 +15,18 @@ const AttendanceLog = () => {
   }, []);
 
   const fetchAttendanceLog = async () => {
-    // Mock attendance data
-    setTimeout(() => {
-      const mockData = [];
-      for (let i = 0; i < 20; i++) {
-        const date = new Date();
-        date.setDate(date.getDate() - i);
-        mockData.push({
-          id: i + 1,
-          date: date.toISOString().split('T')[0],
-          timeIn: new Date(date.getTime() + Math.random() * 3600000 + 28800000).toISOString(),
-          status: 'present'
-        });
-      }
-      setAttendanceData(mockData);
+    try {
+      setLoading(true);
+      const response = await studentAPI.getAttendanceLog();
+      setAttendanceData(response.data.attendanceLog || []);
+      setStats(response.data.stats || { totalPresent: 0, thisMonth: 0, averageTime: 'N/A' });
+    } catch (error) {
+      console.error('Error fetching attendance log:', error);
+      setAttendanceData([]);
+      setStats({ totalPresent: 0, thisMonth: 0, averageTime: 'N/A' });
+    } finally {
       setLoading(false);
-    }, 500);
+    }
   };
 
   const formatDate = (dateString) => {
@@ -41,6 +39,7 @@ const AttendanceLog = () => {
   };
 
   const formatTime = (timeString) => {
+    if (!timeString) return 'N/A';
     const time = new Date(timeString);
     return time.toLocaleTimeString('en-US', {
       hour: '2-digit',
@@ -112,7 +111,7 @@ const AttendanceLog = () => {
               </div>
               <div>
                 <p className="text-sm text-gray-600">Total Days Present</p>
-                <p className="text-2xl font-bold text-gray-900">{attendanceData.length}</p>
+                <p className="text-2xl font-bold text-gray-900">{stats.totalPresent}</p>
               </div>
             </div>
           </div>
@@ -124,13 +123,7 @@ const AttendanceLog = () => {
               </div>
               <div>
                 <p className="text-sm text-gray-600">This Month</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {attendanceData.filter(record => {
-                    const recordMonth = record.date.substring(0, 7);
-                    const currentMonth = new Date().toISOString().substring(0, 7);
-                    return recordMonth === currentMonth;
-                  }).length}
-                </p>
+                <p className="text-2xl font-bold text-gray-900">{stats.thisMonth}</p>
               </div>
             </div>
           </div>
@@ -142,7 +135,7 @@ const AttendanceLog = () => {
               </div>
               <div>
                 <p className="text-sm text-gray-600">Average Time</p>
-                <p className="text-2xl font-bold text-gray-900">9:15 AM</p>
+                <p className="text-2xl font-bold text-gray-900">{stats.averageTime}</p>
               </div>
             </div>
           </div>
@@ -203,7 +196,7 @@ const AttendanceLog = () => {
                           {formatDate(record.date)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {formatTime(record.timeIn)}
+                          {formatTime(record.timeMarked || record.timeIn)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
@@ -236,7 +229,7 @@ const AttendanceLog = () => {
                         </div>
                         <div className="flex items-center space-x-2 text-sm text-gray-600">
                           <Clock className="h-4 w-4" />
-                          <span>{formatTime(record.timeIn)}</span>
+                          <span>{formatTime(record.timeMarked || record.timeIn)}</span>
                         </div>
                       </div>
                     </div>

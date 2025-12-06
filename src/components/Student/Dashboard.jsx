@@ -145,37 +145,17 @@ const StudentDashboard = () => {
                     Today's Attendance
                   </h3>
                   
-                  {dashboardData?.todayAttendance?.marked ? (
-                    <div>
-                      <p className="text-green-700 font-medium mb-1">
-                        ✓ Attendance marked successfully
-                      </p>
-                      <div className="flex items-center space-x-2 text-sm text-green-600">
-                        <Clock className="h-4 w-4" />
-                        <span>Marked at {dashboardData.todayAttendance.time}</span>
-                      </div>
-                    </div>
-                  ) : (
-                    <div>
-                      <p className="text-yellow-700 font-medium mb-3">
-                        You haven't marked attendance today
-                      </p>
-                      <button
-                        onClick={handleMarkAttendance}
-                        disabled={markingAttendance}
-                        className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-4 rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-lg"
-                      >
-                        {markingAttendance ? (
-                          <div className="flex items-center space-x-2">
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                            <span>Marking...</span>
-                          </div>
-                        ) : (
-                          'Mark Attendance Now'
-                        )}
-                      </button>
-                    </div>
-                  )}
+                  <div>
+                    <p className="text-blue-700 font-medium mb-3">
+                      Mark attendance for active subjects
+                    </p>
+                    <a
+                      href="/student/subject-attendance"
+                      className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-4 rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-200 transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-lg inline-block text-center"
+                    >
+                      Go to Subject Attendance
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
@@ -234,8 +214,8 @@ const StudentDashboard = () => {
             <div className="p-6">
               {dashboardData?.recentUpdates?.length > 0 ? (
                 <div className="space-y-4">
-                  {dashboardData.recentUpdates.slice(0, 3).map((update) => (
-                    <div key={update.id} className="border-l-4 border-blue-200 pl-4 py-2">
+                  {dashboardData.recentUpdates.slice(0, 3).map((update, index) => (
+                    <div key={update.id || update._id || index} className="border-l-4 border-blue-200 pl-4 py-2">
                       <h3 className="font-medium text-gray-900 mb-1">
                         {update.title}
                       </h3>

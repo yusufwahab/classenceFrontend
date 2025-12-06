@@ -20,6 +20,8 @@ import AdminStudents from './components/Admin/Students';
 import PostUpdate from './components/Admin/PostUpdate';
 import ManageUpdates from './components/Admin/ManageUpdates';
 import AdminReports from './components/Admin/Reports';
+import SubjectManagement from './components/Admin/SubjectManagement';
+import SubjectAttendance from './components/Student/SubjectAttendance';
 
 
 
@@ -58,6 +60,11 @@ const AppRoutes = () => {
           <AttendanceLog />
         </ProtectedRoute>
       } />
+      <Route path="/student/subject-attendance" element={
+        <ProtectedRoute role="student">
+          <SubjectAttendance />
+        </ProtectedRoute>
+      } />
 
       {/* Admin Routes */}
       <Route path="/admin/dashboard" element={
@@ -88,6 +95,11 @@ const AppRoutes = () => {
       <Route path="/admin/reports" element={
         <ProtectedRoute role="admin">
           <AdminReports />
+        </ProtectedRoute>
+      } />
+      <Route path="/admin/subjects" element={
+        <ProtectedRoute role="admin">
+          <SubjectManagement />
         </ProtectedRoute>
       } />
 

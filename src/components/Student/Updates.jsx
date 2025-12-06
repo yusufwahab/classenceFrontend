@@ -93,8 +93,8 @@ const StudentUpdates = () => {
         {/* Updates List */}
         <div className="space-y-6">
           {filteredUpdates.length > 0 ? (
-            filteredUpdates.map((update) => (
-              <div key={update.id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+            filteredUpdates.map((update, index) => (
+              <div key={update.id || update._id || index} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
                 <div className="p-6">
                   <div className="flex items-start space-x-4">
                     <div className="flex-shrink-0">

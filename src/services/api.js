@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Update this URL to match your backend server
-const API_BASE_URL = 'https://classencebackend.onrender.com/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -49,16 +49,18 @@ export const profileAPI = {
 export const studentAPI = {
   getDashboard: () => api.get('/student/dashboard'),
   markAttendance: () => api.post('/student/attendance'),
+  markSessionAttendance: (sessionId, data) => api.post(`/subject-attendance/mark/${sessionId}`, data),
+  getActiveSessions: () => api.get('/subject-attendance/active'),
   getUpdates: () => api.get('/student/updates'),
   getAttendanceLog: (params) => api.get('/student/attendance-log', { params }),
 };
 
 // Admin API
 export const adminAPI = {
-  getDashboard: () => api.get('/admin/dashboard'),
+  getDashboard: () => api.get('/dashboard'),
   getStudents: (params) => api.get('/admin/students', { params }),
-  getTodayAttendance: (date) => api.get('/admin/attendance/today', { params: { date } }),
-  getAttendanceByDate: (date) => api.get('/admin/attendance', { params: { date } }),
+  getTodayAttendance: (date) => api.get('/subject-attendance/admin/today', { params: { date } }),
+  getAttendanceByDate: (date) => api.get('/attendance', { params: { date } }),
   postUpdate: (updateData) => {
     return api.post('/admin/updates', updateData, {
       headers: { 'Content-Type': 'application/json' }
@@ -70,6 +72,13 @@ export const adminAPI = {
     params,
     responseType: 'blob'
   }),
+  createSubject: (data) => api.post('/subjects', data),
+  getSubjects: () => api.get('/subjects'),
+  createAttendanceSession: (data) => api.post('/subject-attendance/sessions', data),
+  getAttendanceSessions: () => api.get('/subject-attendance/sessions'),
+  endAttendanceSession: (sessionId) => api.patch(`/subject-attendance/sessions/${sessionId}/end`),
+  editAttendanceSession: (sessionId, data) => api.put(`/subject-attendance/sessions/${sessionId}`, data),
+  deleteAttendanceSession: (sessionId) => api.delete(`/subject-attendance/sessions/${sessionId}`)
 };
 
 // Shared API
