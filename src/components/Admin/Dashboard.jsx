@@ -54,11 +54,11 @@ const AdminDashboard = () => {
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center justify-between">
               <div className="p-3 bg-blue-100 rounded-lg">
                 <Users className="h-6 w-6 text-blue-600" />
               </div>
-              <div>
+              <div className="text-right">
                 <p className="text-sm text-gray-600">Total Students</p>
                 <p className="text-2xl font-bold text-gray-900">{dashboardData?.totalStudents}</p>
               </div>
@@ -66,11 +66,11 @@ const AdminDashboard = () => {
           </div>
 
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center justify-between">
               <div className="p-3 bg-green-100 rounded-lg">
                 <CheckCircle className="h-6 w-6 text-green-600" />
               </div>
-              <div>
+              <div className="text-right">
                 <p className="text-sm text-gray-600">Present Today</p>
                 <p className="text-2xl font-bold text-gray-900">{dashboardData?.todayAttendance.present}</p>
               </div>
@@ -78,11 +78,11 @@ const AdminDashboard = () => {
           </div>
 
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center justify-between">
               <div className="p-3 bg-red-100 rounded-lg">
                 <Users className="h-6 w-6 text-red-600" />
               </div>
-              <div>
+              <div className="text-right">
                 <p className="text-sm text-gray-600">Absent Today</p>
                 <p className="text-2xl font-bold text-gray-900">{dashboardData?.todayAttendance.absent}</p>
               </div>
@@ -90,11 +90,11 @@ const AdminDashboard = () => {
           </div>
 
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center justify-between">
               <div className="p-3 bg-purple-100 rounded-lg">
                 <TrendingUp className="h-6 w-6 text-purple-600" />
               </div>
-              <div>
+              <div className="text-right">
                 <p className="text-sm text-gray-600">Attendance Rate</p>
                 <p className="text-2xl font-bold text-gray-900">{attendanceRate}%</p>
               </div>

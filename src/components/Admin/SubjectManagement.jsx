@@ -230,7 +230,7 @@ const SubjectManagement = () => {
           {sessions.filter(s => s.isActive).map((session, index) => (
             <div key={session.id || session._id || index} className="relative p-4 border rounded-lg">
               <div className="flex items-center space-x-4 pr-16 sm:pr-0">
-                <Users className="h-5 w-5 text-green-600" />
+                <Users className="h-5 w-5 text-blue-600" />
                 <div className="flex-1">
                   <h4 className="font-medium">{session.subjectName} ({session.subjectCode})</h4>
                   <p className="text-sm text-gray-600">

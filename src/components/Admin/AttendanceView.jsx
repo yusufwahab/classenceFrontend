@@ -263,32 +263,39 @@ const AdminAttendanceView = () => {
         {/* Subject Tabs */}
         {Object.keys(subjectAttendance).length > 1 && (
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
+            <div className="md:hidden px-4 py-2 bg-blue-50 border-b border-blue-100">
+              <p className="text-xs text-blue-600 flex items-center">
+                <span>← Swipe to see more subjects →</span>
+              </p>
+            </div>
             <div className="border-b border-gray-200">
-              <nav className="flex space-x-8 px-6" aria-label="Tabs">
-                <button
-                  onClick={() => setActiveTab('general')}
-                  className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                    activeTab === 'general'
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  All Attendance ({attendanceRecords.length})
-                </button>
-                {Object.keys(subjectAttendance).map((subject) => (
+              <div className="overflow-x-auto">
+                <nav className="flex space-x-8 px-6 min-w-max" aria-label="Tabs">
                   <button
-                    key={subject}
-                    onClick={() => setActiveTab(subject)}
-                    className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                      activeTab === subject
+                    onClick={() => setActiveTab('general')}
+                    className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+                      activeTab === 'general'
                         ? 'border-blue-500 text-blue-600'
                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                     }`}
                   >
-                    {subject} ({subjectAttendance[subject].length})
+                    All Attendance ({attendanceRecords.length})
                   </button>
-                ))}
-              </nav>
+                  {Object.keys(subjectAttendance).map((subject) => (
+                    <button
+                      key={subject}
+                      onClick={() => setActiveTab(subject)}
+                      className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+                        activeTab === subject
+                          ? 'border-blue-500 text-blue-600'
+                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      }`}
+                    >
+                      {subject} ({subjectAttendance[subject].length})
+                    </button>
+                  ))}
+                </nav>
+              </div>
             </div>
           </div>
         )}
