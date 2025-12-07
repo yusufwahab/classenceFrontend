@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Clock, CheckCircle, XCircle, BookOpen } from 'lucide-react';
-import { studentAPI } from '../../services/api';
+import { studentAPI, profileAPI } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import Navbar from '../Shared/Navbar';
 
@@ -9,6 +9,9 @@ const SubjectAttendance = () => {
   const [activeSessions, setActiveSessions] = useState([]);
   const [loadingStates, setLoadingStates] = useState({});
   const [message, setMessage] = useState({ type: '', text: '' });
+  const [refreshLoading, setRefreshLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [redirecting, setRedirecting] = useState(false);
 
   useEffect(() => {
     loadActiveSessions();
@@ -19,7 +22,8 @@ const SubjectAttendance = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const loadActiveSessions = async () => {
+  const loadActiveSessions = async (showLoading = false) => {
+    if (showLoading) setRefreshLoading(true);
     try {
       console.log('Fetching active sessions...');
       console.log('Student token:', localStorage.getItem('token'));
@@ -49,6 +53,9 @@ const SubjectAttendance = () => {
       console.error('Error loading active sessions:', error);
       console.error('Error details:', error.response);
       setActiveSessions([]);
+    } finally {
+      setLoading(false);
+      if (showLoading) setRefreshLoading(false);
     }
   };
 
@@ -57,36 +64,10 @@ const SubjectAttendance = () => {
     setMessage({ type: '', text: '' });
     
     try {
-      // Backend expects empty payload - student info comes from JWT token
-      const payload = {};
+      console.log('🚀 Marking attendance for session:', sessionId);
       
-      console.log('🔍 === DEEP ATTENDANCE DEBUGGING ===');
-      console.log('1. Student Info:', {
-        id: user?.id,
-        name: `${user?.firstName} ${user?.lastName}`,
-        matricNumber: user?.matricNumber,
-        departmentId: user?.departmentId
-      });
-      
-      console.log('2. Session Info:', {
-        sessionId: sessionId,
-        subjectName: activeSessions.find(s => s.id === sessionId)?.subjectName,
-        hasAttended: activeSessions.find(s => s.id === sessionId)?.hasAttended
-      });
-      
-      console.log('3. Signature Check:', {
-        signatureExists: !!localStorage.getItem('userSignature'),
-        signatureLength: localStorage.getItem('userSignature')?.length || 0,
-        signaturePreview: localStorage.getItem('userSignature')?.substring(0, 50) + '...'
-      });
-      
-      console.log('4. Payload being sent:', payload);
-      console.log('5. API URL:', `/subject-attendance/mark/${sessionId}`);
-      console.log('6. Authorization header:', `Bearer ${localStorage.getItem('token')?.substring(0, 20)}...`);
-      
-      console.log('🚀 Making API call now...');
-      
-      const response = await studentAPI.markSessionAttendance(sessionId, payload);
+      // Backend will automatically use the signature from user profile
+      const response = await studentAPI.markSessionAttendance(sessionId);
       console.log('Attendance marked successfully:', response.data);
       setMessage({ type: 'success', text: 'Attendance marked successfully!' });
       // Refresh sessions to update status
@@ -97,13 +78,14 @@ const SubjectAttendance = () => {
       const errorMessage = error.response?.data?.message || 'Failed to mark attendance';
       
       if (errorMessage.includes('signature') || errorMessage.includes('profile')) {
+        setRedirecting(true);
         setMessage({ 
           type: 'error', 
-          text: 'Please complete your profile by adding signature first' 
+          text: 'Please complete your profile by adding signature first. You will be redirected to the signature page...' 
         });
         setTimeout(() => {
           window.location.href = '/signature-setup';
-        }, 2000);
+        }, 3000);
       } else if (errorMessage.includes('duplicate') || errorMessage.includes('already marked') || error.response?.data?.error?.includes('E11000')) {
         setMessage({ 
           type: 'error', 
@@ -131,6 +113,17 @@ const SubjectAttendance = () => {
     return `${minutes}m ${seconds}s remaining`;
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading sessions...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
@@ -138,10 +131,11 @@ const SubjectAttendance = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
         <h1 className="text-xl sm:text-2xl font-bold">Subject Attendance</h1>
         <button
-          onClick={loadActiveSessions}
+          onClick={() => loadActiveSessions(true)}
+          disabled={refreshLoading}
           className="btn-gradient text-white px-4 py-2 rounded-lg text-sm min-h-[44px] w-full sm:w-auto"
         >
-          Refresh
+          {refreshLoading ? 'Loading...' : 'Refresh'}
         </button>
       </div>
 
@@ -154,6 +148,8 @@ const SubjectAttendance = () => {
         }`}>
           {message.type === 'success' ? (
             <CheckCircle className="h-5 w-5" />
+          ) : redirecting ? (
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-red-600"></div>
           ) : (
             <XCircle className="h-5 w-5" />
           )}
@@ -184,7 +180,15 @@ const SubjectAttendance = () => {
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-gray-600">Time:</span>
                   <span className="font-medium">
-                    {new Date(session.startTime).toLocaleTimeString()} - {new Date(session.endTime).toLocaleTimeString()}
+                    {new Date(session.startTime).toLocaleTimeString('en-US', { 
+                      hour: '2-digit', 
+                      minute: '2-digit',
+                      hour12: true 
+                    })} - {new Date(session.endTime).toLocaleTimeString('en-US', { 
+                      hour: '2-digit', 
+                      minute: '2-digit',
+                      hour12: true 
+                    })}
                   </span>
                 </div>
                 
@@ -202,12 +206,10 @@ const SubjectAttendance = () => {
                     console.log('Button clicked for session:', session.id, 'hasAttended:', session.hasAttended);
                     markAttendance(session.id);
                   }}
-                  disabled={loadingStates[session.id] || session.hasAttended === true || new Date() > new Date(session.endTime)}
+                  disabled={loadingStates[session.id] || session.hasAttended === true}
                   className={`w-full py-3 px-4 rounded-lg font-medium transition-colors min-h-[44px] ${
                     session.hasAttended === true
                       ? 'bg-green-100 text-green-700 cursor-not-allowed'
-                      : new Date() > new Date(session.endTime)
-                      ? 'bg-gray-100 text-gray-500 cursor-not-allowed'
                       : 'btn-gradient text-white hover:opacity-90'
                   }`}
                 >
@@ -215,8 +217,6 @@ const SubjectAttendance = () => {
                     'Marking...'
                   ) : session.hasAttended === true ? (
                     'Attendance Marked ✓'
-                  ) : new Date() > new Date(session.endTime) ? (
-                    'Session Expired'
                   ) : (
                     'Mark Attendance'
                   )}

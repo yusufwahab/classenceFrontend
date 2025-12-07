@@ -14,17 +14,18 @@ const SignatureSetup = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  // Get pending user ID
+  // Get pending user ID (for new registrations) or current user (for existing users)
   const pendingUserId = localStorage.getItem('pendingUserId');
+  const { user: currentUser } = useAuth();
 
-  // Use useEffect to handle navigation
+  // Allow access if either pending registration or existing user without signature
   React.useEffect(() => {
-    if (!pendingUserId) {
-      navigate('/register');
+    if (!pendingUserId && !currentUser) {
+      navigate('/login');
     }
-  }, [pendingUserId, navigate]);
+  }, [pendingUserId, currentUser, navigate]);
 
-  if (!pendingUserId) {
+  if (!pendingUserId && !currentUser) {
     return null;
   }
 
@@ -74,21 +75,27 @@ const SignatureSetup = () => {
     setLoading(true);
 
     try {
+      console.log('Saving signature to backend...');
+      console.log('Signature data length:', signatureData.length);
+      console.log('Signature preview:', signatureData.substring(0, 50) + '...');
+      
       // Save signature to backend
-      await profileAPI.saveSignature(signatureData);
+      const response = await profileAPI.saveSignature(signatureData);
+      console.log('Signature save response:', response.data);
       
-      // Get updated user profile
-      const profileResponse = await profileAPI.getProfile();
-      const user = profileResponse.data.user;
-      
-      // Login with complete profile
-      login(user, localStorage.getItem('token') || 'temp-token');
-      
-      // Clear pending user ID
-      localStorage.removeItem('pendingUserId');
-      
-      setMessage({ type: 'success', text: 'Profile completed! Redirecting to dashboard...' });
-      setTimeout(() => navigate('/student/dashboard'), 1500);
+      if (pendingUserId) {
+        // New registration flow
+        const profileResponse = await profileAPI.getProfile();
+        const user = profileResponse.data.user;
+        login(user, localStorage.getItem('token') || 'temp-token');
+        localStorage.removeItem('pendingUserId');
+        setMessage({ type: 'success', text: 'Profile completed! Redirecting to dashboard...' });
+        setTimeout(() => navigate('/student/dashboard'), 1500);
+      } else {
+        // Existing user adding signature
+        setMessage({ type: 'success', text: 'Signature saved! Redirecting back...' });
+        setTimeout(() => navigate('/student/subject-attendance'), 1500);
+      }
     } catch (error) {
       setMessage({ 
         type: 'error', 

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { CheckCircle, AlertTriangle, Bell, Calendar, Clock } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { studentAPI } from '../../services/api';
+import { studentAPI, profileAPI } from '../../services/api';
 import Navbar from '../Shared/Navbar';
 
 const StudentDashboard = () => {
@@ -31,7 +31,24 @@ const StudentDashboard = () => {
     setMarkingAttendance(true);
     
     try {
-      const response = await studentAPI.markAttendance();
+      // Get user's signature from profile
+      const profileResponse = await profileAPI.getProfile();
+      const signature = profileResponse.data.user?.signatureImage;
+      
+      if (!signature) {
+        setMessage({ 
+          type: 'error', 
+          text: 'Please complete your profile by adding signature first' 
+        });
+        // Redirect to signature setup after 2 seconds
+        setTimeout(() => {
+          window.location.href = '/signature-setup';
+        }, 2000);
+        return;
+      }
+      
+      // Mark attendance with signature
+      const response = await studentAPI.markAttendance({ signatureImage: signature });
       setMessage({ type: 'success', text: 'Attendance marked successfully!' });
       
       // Refresh dashboard data

@@ -82,8 +82,8 @@ const SubjectManagement = () => {
     try {
       const payload = {
         subjectId: sessionForm.subjectId,
-        startTime: new Date(`${sessionForm.date}T${sessionForm.startTime}:00`).toISOString(),
-        endTime: new Date(`${sessionForm.date}T${sessionForm.endTime}:00`).toISOString()
+        startTime: `${sessionForm.date}T${sessionForm.startTime}:00`,
+        endTime: `${sessionForm.date}T${sessionForm.endTime}:00`
       };
       console.log('Creating session with payload:', payload);
       console.log('Admin user:', user);
@@ -130,8 +130,8 @@ const SubjectManagement = () => {
     setLoading(true);
     try {
       const payload = {
-        startTime: new Date(`${editingSession.date}T${editingSession.startTime}:00`).toISOString(),
-        endTime: new Date(`${editingSession.date}T${editingSession.endTime}:00`).toISOString()
+        startTime: `${editingSession.date}T${editingSession.startTime}:00`,
+        endTime: `${editingSession.date}T${editingSession.endTime}:00`
       };
       await adminAPI.editAttendanceSession(editingSession.id || editingSession._id, payload);
       alert('Session updated successfully!');
