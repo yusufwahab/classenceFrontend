@@ -37,10 +37,26 @@ const Login = () => {
       }
     } catch (error) {
       console.error('Login error:', error.response?.data || error.message);
-      setMessage({
-        type: 'error',
-        text: error.response?.data?.message || 'Invalid email or password'
-      });
+      
+      if (error.response?.data?.requiresVerification) {
+        setMessage({
+          type: 'error',
+          text: 'Please verify your email before logging in. Check your email for the verification code.'
+        });
+        setTimeout(() => {
+          navigate('/verify-email', {
+            state: {
+              userId: error.response.data.userId,
+              email: error.response.data.email
+            }
+          });
+        }, 2000);
+      } else {
+        setMessage({
+          type: 'error',
+          text: error.response?.data?.message || 'Invalid email or password'
+        });
+      }
     } finally {
       setLoading(false);
     }

@@ -91,21 +91,18 @@ const Register = () => {
         password: studentForm.password
       };
       
-      console.log('Sending registration payload:', payload);
-      console.log('Selected department:', departments.find(d => d.id === studentForm.departmentId));
-      console.log('All departments:', departments);
-      console.log('Form departmentId:', studentForm.departmentId);
       const response = await authAPI.registerStudent(payload);
+      console.log('Student registration response:', response.data);
       
-      // Store user ID for signature setup
-      if (response?.data?.user?.id) {
-        localStorage.setItem('pendingUserId', response.data.user.id);
-      } else {
-        localStorage.setItem('pendingUserId', 'temp-user-id');
-      }
-      
-      setMessage({ type: 'success', text: 'Registration successful! Setting up your signature...' });
-      setTimeout(() => navigate('/signature-setup'), 1000);
+      setMessage({ type: 'success', text: 'Registration successful! Please check your email for verification code.' });
+      setTimeout(() => {
+        navigate('/verify-email', {
+          state: {
+            userId: response.data.userId || response.data.user?.id,
+            email: response.data.email || studentForm.email
+          }
+        });
+      }, 1000);
     } catch (error) {
       console.error('Registration error:', error);
       if (error.response) {
@@ -128,6 +125,7 @@ const Register = () => {
     if (!validateForm(adminForm)) return;
 
     setLoading(true);
+    setMessage({ type: '', text: '' });
     
     try {
       const payload = {
@@ -142,10 +140,23 @@ const Register = () => {
       
       console.log('Admin registration payload:', payload);
       const response = await authAPI.registerAdmin(payload);
+      console.log('Admin registration response:', response.data);
+      console.log('requiresVerification:', response.data.requiresVerification);
       
-      // Login with returned user data
-      login(response.data.user, response.data.token);
-      navigate('/admin/dashboard');
+      if (response.data.requiresVerification) {
+        setMessage({ type: 'success', text: 'Registration successful! Please check your email for verification code.' });
+        setTimeout(() => {
+          navigate('/verify-email', {
+            state: {
+              userId: response.data.userId,
+              email: response.data.email
+            }
+          });
+        }, 1000);
+      } else {
+        login(response.data.user, response.data.token);
+        navigate('/admin/dashboard');
+      }
     } catch (error) {
       console.error('Admin registration error:', error.response?.data || error.message);
       console.error('Full error:', error);

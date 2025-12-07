@@ -5,6 +5,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import Landing from './pages/Landing';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
+import VerifyEmail from './components/Auth/VerifyEmail';
 import SignatureSetup from './components/Auth/SignatureSetup';
 import ProtectedRoute from './components/Auth/ProtectedRoute';
 
@@ -42,6 +43,7 @@ const AppRoutes = () => {
       <Route path="/" element={user ? <Navigate to={`/${user.role}/dashboard`} replace /> : <Landing />} />
       <Route path="/login" element={user ? <Navigate to={`/${user.role}/dashboard`} replace /> : <Login />} />
       <Route path="/register" element={user ? <Navigate to={`/${user.role}/dashboard`} replace /> : <Register />} />
+      <Route path="/verify-email" element={<VerifyEmail />} />
       <Route path="/signature-setup" element={<SignatureSetup />} />
 
       {/* Student Routes */}

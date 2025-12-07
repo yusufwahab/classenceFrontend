@@ -37,6 +37,8 @@ export const authAPI = {
   login: (credentials) => api.post('/auth/login', credentials),
   registerStudent: (userData) => api.post('/auth/register', userData),
   registerAdmin: (userData) => api.post('/auth/register-admin', userData),
+  verifyEmail: (data) => api.post('/auth/verify-email', data),
+  resendCode: (data) => api.post('/auth/resend-code', data),
 };
 
 // Profile API
